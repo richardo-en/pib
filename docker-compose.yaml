@@ -1,0 +1,33 @@
+services:
+  dvwa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dvwa-modsecurity
+    ports:
+      - "8080:80"  # Port mapovaný na Apache
+    depends_on:
+      - db  # Zabezpečí, že MySQL sa spustí pred DVWA
+    environment:
+      # Databázové nastavenia, ktoré DVWA použije
+      DB_SERVER: db
+      DB_USER: dvwa
+      DB_PASSWORD: password
+      DB_DATABASE: dvwa
+
+  db:
+    image: mysql:5.7
+    container_name: dvwa-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword  # Heslo root užívateľa
+      MYSQL_DATABASE: dvwa  # Automaticky vytvorená databáza
+      MYSQL_USER: dvwa  # Automaticky vytvorený užívateľ
+      MYSQL_PASSWORD: password  # Heslo užívateľa
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:  # Pretrvávajúce úložisko pre MySQL
+
+
